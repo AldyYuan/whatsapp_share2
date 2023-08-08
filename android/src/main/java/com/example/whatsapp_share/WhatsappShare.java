@@ -196,7 +196,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
             intentReg.setType("*/*");
             intentReg.setPackage(packageName);
-            // intentReg.putExtra("jid", phone + "@s.whatsapp.net");
+            intentReg.putExtra("jid", phone + "@s.whatsapp.net");
             intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
             intentReg.putExtra(intentReg.EXTRA_TEXT, text);
             intentReg.putExtra(intentReg.EXTRA_STREAM, files);
@@ -213,7 +213,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
             intentW4b.setType("*/*");
             intentW4b.setPackage("com.whatsapp.w4b");
-            // intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
+            intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
             intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
             intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
             intentW4b.putExtra(intentW4b.EXTRA_STREAM, files);
