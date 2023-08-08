@@ -189,7 +189,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
 
             Uri uri = Uri.parse("smsto:" + phone);
 
-            Intent intentReg = new Intent(Intent.ACTION_SENDTO, uri);
+            Intent intentReg = new Intent(Intent.ACTION_SEND_MULTIPLE, uri);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
             // intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
@@ -205,7 +205,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
 
-            Intent intentW4b = new Intent(Intent.ACTION_SENDTO, uri);
+            Intent intentW4b = new Intent(Intent.ACTION_SEND_MULTIPLE, uri);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
             // intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
