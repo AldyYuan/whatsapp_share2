@@ -192,7 +192,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             Intent intentReg = new Intent(Intent.ACTION_SENDTO, uri);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-            intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
+            // intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
             intentReg.setType("*/*");
             intentReg.setPackage(packageName);
             // intentReg.putExtra("jid", phone + "@s.whatsapp.net");
@@ -208,7 +208,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             Intent intentW4b = new Intent(Intent.ACTION_SENDTO, uri);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-            intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
+            // intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
             intentW4b.setType("*/*");
             intentW4b.setPackage("com.whatsapp.w4b");
             // intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
