@@ -233,9 +233,9 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
 
             try {
-                context.startActivity(intentReg);
-            } catch (Exception ex) {
                 context.startActivity(intentW4b);
+            } catch (Exception ex) {
+                context.startActivity(intentReg);
             }
 
             result.success(true);
