@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.content.ComponentName;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -189,13 +190,17 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
 
             String url = "https://api.whatsapp.com/send?phone=" + phone + "&text=" + text;
 
+            ComponentName componentReg = new ComponentName("com.whatsapp", "com.whatsapp.Conversation");
+            ComponentName componentW4b = new ComponentName("com.whatsapp.w4b", "com.whatsapp.Conversation");
+
             Intent intentReg = new Intent();
             intentReg.setData(Uri.parse(url));
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
             intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
             intentReg.setType("*/*");
-            intentReg.setPackage(packageName);
+            // intentReg.setPackage(packageName);
+            intentReg.setComponent(componentReg);
             intentReg.putExtra("jid", phone + "@s.whatsapp.net");
             intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
             intentReg.putExtra(intentReg.EXTRA_TEXT, text);
@@ -212,7 +217,8 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
             intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
             intentW4b.setType("*/*");
-            intentW4b.setPackage("com.whatsapp.w4b");
+            // intentW4b.setPackage("com.whatsapp.w4b");
+            intentReg.setComponent(componentW4b);
             intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
             intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
             intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
