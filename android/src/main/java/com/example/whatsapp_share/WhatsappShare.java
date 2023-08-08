@@ -187,12 +187,13 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 files.add(fileUri);
             }
 
-            Uri uri = Uri.parse("smsto:" + phone);
+            String url = "https://api.whatsapp.com/send?phone=" + phone + "&text=" + text;
 
-            Intent intentReg = new Intent(Intent.ACTION_SEND_MULTIPLE, uri);
+            Intent intentReg = new Intent();
+            intentReg.data = Uri.parse(url);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-            // intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
+            intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
             intentReg.setType("*/*");
             intentReg.setPackage(packageName);
             // intentReg.putExtra("jid", phone + "@s.whatsapp.net");
@@ -205,10 +206,11 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
 
-            Intent intentW4b = new Intent(Intent.ACTION_SEND_MULTIPLE, uri);
+            Intent intentW4b = new Intent();
+            intentW4b.data = Uri.parse(url);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-            // intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
+            intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
             intentW4b.setType("*/*");
             intentW4b.setPackage("com.whatsapp.w4b");
             // intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
