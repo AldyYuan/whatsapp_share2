@@ -8,6 +8,7 @@ import android.database.Cursor; // Import Cursor
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.widget.Toast;
+import android.os.Handler;
 
 import java.util.ArrayList; // Import ArrayList
 
@@ -19,7 +20,8 @@ public class ContactHelper {
         return phoneNumber.matches(phonePattern);
     }
 
-    public static void saveContact(Context context, String displayName, String phoneNumber) {
+    public static void saveContact(Context context, String displayName, String phoneNumber,
+            Runnable afterSaveCallback) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
@@ -48,6 +50,16 @@ public class ContactHelper {
                 long contactId = ContentUris.parseId(results[0].uri);
                 Toast.makeText(context, "Contact saved with ID: " + contactId,
                         Toast.LENGTH_SHORT).show();
+
+                if (afterSaveCallback != null) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            afterSaveCallback.run();
+                        }
+                    }, 1000);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

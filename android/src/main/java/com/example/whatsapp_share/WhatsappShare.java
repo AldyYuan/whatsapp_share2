@@ -186,6 +186,11 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 return;
             }
 
+            if (!ContactHelper.isPhoneNumberValid(phone)) {
+                Toast.makeText(context, "Invalid phone number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             for (int i = 0; i < filePaths.size(); i++) {
                 File file = new File(filePaths.get(i));
                 Uri fileUri = FileProvider.getUriForFile(context,
@@ -193,63 +198,64 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 files.add(fileUri);
             }
 
-            if (!ContactHelper.isPhoneNumberValid(phone)) {
-                Toast.makeText(context, "Invalid phone number", Toast.LENGTH_SHORT).show();
-            } else if (ContactHelper.isContactExists(context, phone)) {
-                // Log
-                System.out.println("Contact already exists");
-            } else {
-                ContactHelper.saveContact(context, customerName, phone);
+            Intent intentReg = new Intent();
+            intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
+            intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
+            intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
+            intentReg.setType("*/*");
+            intentReg.setPackage(packageName);
+            intentReg.putExtra("jid", phone + "@s.whatsapp.net");
+            intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
+            intentReg.putExtra(intentReg.EXTRA_TEXT, text);
+            intentReg.putExtra(intentReg.EXTRA_STREAM, files);
+            intentReg.addFlags(intentReg.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // Intent chooserIntent = intentReg.createChooser(intent, chooserTitle);
+            intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
+            intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
+
+            Intent intentW4b = new Intent();
+            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
+            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
+            intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
+            intentW4b.setType("*/*");
+            intentW4b.setPackage("com.whatsapp.w4b");
+            intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
+            intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
+            intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
+            intentW4b.putExtra(intentW4b.EXTRA_STREAM, files);
+            intentW4b.addFlags(intentW4b.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // Intent chooserIntent = intentW4b.createChooser(intent, chooserTitle);
+            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
+            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
+
+            if (!ContactHelper.isContactExists(context, phone)) {
+                Runnable afterSaveCallback = new Runnable() {
+                    @Override
+                    public void run() {
+                        // Code to run after the contact is saved
+                        try {
+                            context.startActivity(intentW4b);
+                        } catch (Exception ex) {
+                            context.startActivity(intentReg);
+                        }
+
+                        result.success(true);
+                    }
+                };
+
+                ContactHelper.saveContact(context, customerName, phone, afterSaveCallback);
+                return;
             }
 
-            // Delayed action after checking contact
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("Contact checked and delay completed");
+            try {
+                context.startActivity(intentW4b);
+            } catch (Exception ex) {
+                context.startActivity(intentReg);
+            }
 
-                    Intent intentReg = new Intent();
-                    intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
-                    intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-                    intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
-                    intentReg.setType("*/*");
-                    intentReg.setPackage(packageName);
-                    intentReg.putExtra("jid", phone + "@s.whatsapp.net");
-                    intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
-                    intentReg.putExtra(intentReg.EXTRA_TEXT, text);
-                    intentReg.putExtra(intentReg.EXTRA_STREAM, files);
-                    intentReg.addFlags(intentReg.FLAG_GRANT_READ_URI_PERMISSION);
-
-                    // Intent chooserIntent = intentReg.createChooser(intent, chooserTitle);
-                    intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
-                    intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-
-                    Intent intentW4b = new Intent();
-                    intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
-                    intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-                    intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
-                    intentW4b.setType("*/*");
-                    intentW4b.setPackage("com.whatsapp.w4b");
-                    intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
-                    intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
-                    intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
-                    intentW4b.putExtra(intentW4b.EXTRA_STREAM, files);
-                    intentW4b.addFlags(intentW4b.FLAG_GRANT_READ_URI_PERMISSION);
-
-                    // Intent chooserIntent = intentW4b.createChooser(intent, chooserTitle);
-                    intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
-                    intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-
-                    try {
-                        context.startActivity(intentW4b);
-                    } catch (Exception ex) {
-                        context.startActivity(intentReg);
-                    }
-
-                    result.success(true);
-                }
-            }, 1000);
+            result.success(true);
 
         } catch (Exception ex) {
             result.error(ex.getMessage(), null, null);
