@@ -3,11 +3,13 @@ package com.example.whatsapp_share;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor; // Import Cursor
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.database.Cursor;
+import android.widget.Toast;
+
+import java.util.ArrayList; // Import ArrayList
 
 public class ContactHelper {
     public static void saveContact(Context context, String displayName, String phoneNumber) {
@@ -37,8 +39,8 @@ public class ContactHelper {
             ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
             if (results != null && results.length > 0) {
                 long contactId = ContentUris.parseId(results[0].uri);
-                // Toast.makeText(context, "Contact saved with ID: " + contactId,
-                // Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Contact saved with ID: " + contactId,
+                        Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
