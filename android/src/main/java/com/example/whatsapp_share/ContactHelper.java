@@ -12,6 +12,13 @@ import android.widget.Toast;
 import java.util.ArrayList; // Import ArrayList
 
 public class ContactHelper {
+    public static boolean isPhoneNumberValid(String phoneNumber) {
+        // Define a regular expression for a valid phone number format
+        String phonePattern = "^[+]?[0-9]{10,14}$"; // Modify the pattern according to your needs
+
+        return phoneNumber.matches(phonePattern);
+    }
+
     public static void saveContact(Context context, String displayName, String phoneNumber) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 

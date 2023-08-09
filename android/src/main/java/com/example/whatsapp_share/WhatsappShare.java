@@ -191,8 +191,13 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 files.add(fileUri);
             }
 
-            // Check if contact exists
-            if (!ContactHelper.isContactExists(context, phone)) {
+            if (!ContactHelper.isPhoneNumberValid(phone)) {
+                // Log
+                System.out.println("Invalid phone number format");
+            } else if (ContactHelper.isContactExists(context, phone)) {
+                // Log
+                System.out.println("Contact already exists");
+            } else {
                 ContactHelper.saveContact(context, customerName, phone);
             }
 
