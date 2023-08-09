@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
     await WhatsappShare.shareFile(
       phone: _phone,
       filePath: ["${_image!.path}"],
+      customerName: 'lol',
     );
   }
 
@@ -73,8 +74,7 @@ class MyApp extends StatelessWidget {
   Future getImage() async {
     try {
       final ImagePicker _picker = ImagePicker();
-      XFile? _pickedFile =
-          (await _picker.pickImage(source: ImageSource.gallery));
+      XFile? _pickedFile = (await _picker.pickImage(source: ImageSource.gallery));
 
       if (_pickedFile != null) {
         // getting a directory path for saving
