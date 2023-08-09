@@ -193,8 +193,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             }
 
             if (!ContactHelper.isPhoneNumberValid(phone)) {
-                // Log
-                System.out.println("Invalid phone number format");
+                Toast.makeText(context, "Invalid phone number", Toast.LENGTH_SHORT).show();
             } else if (ContactHelper.isContactExists(context, phone)) {
                 // Log
                 System.out.println("Contact already exists");
