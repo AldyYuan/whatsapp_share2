@@ -7,6 +7,13 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.content.ComponentName;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -166,6 +173,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             String chooserTitle = call.argument("chooserTitle");
             String phone = call.argument("phone");
             String packageName = call.argument("package");
+            String customerName = call.argument("customerName");
 
             if (filePaths == null || filePaths.isEmpty()) {
                 Log.println(Log.ERROR, "", "FlutterShare: ShareLocalFile Error: filePath null or empty");
@@ -188,19 +196,17 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 files.add(fileUri);
             }
 
-            String url = "https://api.whatsapp.com/send?phone=" + phone + "&text=" + text;
-
-            ComponentName componentReg = new ComponentName("com.whatsapp", "com.whatsapp.Conversation");
-            ComponentName componentW4b = new ComponentName("com.whatsapp.w4b", "com.whatsapp.Conversation");
+            // Check if contact exists
+            if (!ContactHelper.isContactExists(context, phone)) {
+                ContactHelper.saveContact(context, customerName, phone);
+            }
 
             Intent intentReg = new Intent();
-            intentReg.setData(Uri.parse(url));
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
             intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
             intentReg.setType("*/*");
-            // intentReg.setPackage(packageName);
-            intentReg.setComponent(componentReg);
+            intentReg.setPackage(packageName);
             intentReg.putExtra("jid", phone + "@s.whatsapp.net");
             intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
             intentReg.putExtra(intentReg.EXTRA_TEXT, text);
@@ -212,13 +218,11 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
 
             Intent intentW4b = new Intent();
-            intentW4b.setData(Uri.parse(url));
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
             intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
             intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
             intentW4b.setType("*/*");
-            // intentW4b.setPackage("com.whatsapp.w4b");
-            intentReg.setComponent(componentW4b);
+            intentW4b.setPackage("com.whatsapp.w4b");
             intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
             intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
             intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
@@ -240,5 +244,62 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
             result.error(ex.getMessage(), null, null);
             Log.println(Log.ERROR, "", "FlutterShare: Error");
         }
+    }
+}
+
+public class ContactHelper {
+
+    public static void saveContact(Context context, String displayName, String phoneNumber) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE,
+                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber)
+                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                .build());
+
+        try {
+            ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            if (results != null && results.length > 0) {
+                long contactId = ContentUris.parseId(results[0].uri);
+                // Toast.makeText(context, "Contact saved with ID: " + contactId,
+                // Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isContactExists(Context context, String phoneNumber) {
+        String[] projection = new String[] { ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection,
+                ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?",
+                new String[] { phoneNumber },
+                null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                return true; // Contact exists
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false; // Contact doesn't exist
     }
 }
