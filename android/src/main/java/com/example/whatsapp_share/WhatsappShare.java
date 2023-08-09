@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.database.Cursor;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -199,47 +200,56 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
                 System.out.println("Contact already exists");
             } else {
                 ContactHelper.saveContact(context, customerName, phone);
+
+                // Delayed action after saving contact
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Intent intentReg = new Intent();
+                        intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
+                        intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
+                        intentReg.setType("*/*");
+                        intentReg.setPackage(packageName);
+                        intentReg.putExtra("jid", phone + "@s.whatsapp.net");
+                        intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
+                        intentReg.putExtra(intentReg.EXTRA_TEXT, text);
+                        intentReg.putExtra(intentReg.EXTRA_STREAM, files);
+                        intentReg.addFlags(intentReg.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        // Intent chooserIntent = intentReg.createChooser(intent, chooserTitle);
+                        intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
+
+                        Intent intentW4b = new Intent();
+                        intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
+                        intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
+                        intentW4b.setType("*/*");
+                        intentW4b.setPackage("com.whatsapp.w4b");
+                        intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
+                        intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
+                        intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
+                        intentW4b.putExtra(intentW4b.EXTRA_STREAM, files);
+                        intentW4b.addFlags(intentW4b.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        // Intent chooserIntent = intentW4b.createChooser(intent, chooserTitle);
+                        intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
+
+                        try {
+                            context.startActivity(intentW4b);
+                        } catch (Exception ex) {
+                            context.startActivity(intentReg);
+                        }
+
+                        result.success(true);
+                    }
+                }, 1000);
             }
 
-            Intent intentReg = new Intent();
-            intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
-            intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-            intentReg.setAction(intentReg.ACTION_SEND_MULTIPLE);
-            intentReg.setType("*/*");
-            intentReg.setPackage(packageName);
-            intentReg.putExtra("jid", phone + "@s.whatsapp.net");
-            intentReg.putExtra(intentReg.EXTRA_SUBJECT, title);
-            intentReg.putExtra(intentReg.EXTRA_TEXT, text);
-            intentReg.putExtra(intentReg.EXTRA_STREAM, files);
-            intentReg.addFlags(intentReg.FLAG_GRANT_READ_URI_PERMISSION);
-
-            // Intent chooserIntent = intentReg.createChooser(intent, chooserTitle);
-            intentReg.setFlags(intentReg.FLAG_ACTIVITY_CLEAR_TOP);
-            intentReg.setFlags(intentReg.FLAG_ACTIVITY_NEW_TASK);
-
-            Intent intentW4b = new Intent();
-            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
-            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-            intentW4b.setAction(intentW4b.ACTION_SEND_MULTIPLE);
-            intentW4b.setType("*/*");
-            intentW4b.setPackage("com.whatsapp.w4b");
-            intentW4b.putExtra("jid", phone + "@s.whatsapp.net");
-            intentW4b.putExtra(intentW4b.EXTRA_SUBJECT, title);
-            intentW4b.putExtra(intentW4b.EXTRA_TEXT, text);
-            intentW4b.putExtra(intentW4b.EXTRA_STREAM, files);
-            intentW4b.addFlags(intentW4b.FLAG_GRANT_READ_URI_PERMISSION);
-
-            // Intent chooserIntent = intentW4b.createChooser(intent, chooserTitle);
-            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_CLEAR_TOP);
-            intentW4b.setFlags(intentW4b.FLAG_ACTIVITY_NEW_TASK);
-
-            try {
-                context.startActivity(intentW4b);
-            } catch (Exception ex) {
-                context.startActivity(intentReg);
-            }
-
-            result.success(true);
         } catch (Exception ex) {
             result.error(ex.getMessage(), null, null);
             Log.println(Log.ERROR, "", "FlutterShare: Error");
