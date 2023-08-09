@@ -249,7 +249,7 @@ public class WhatsappShare implements FlutterPlugin, MethodCallHandler {
 
                     result.success(true);
                 }
-            }, 2000);
+            }, 1000);
 
         } catch (Exception ex) {
             result.error(ex.getMessage(), null, null);
