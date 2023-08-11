@@ -58,7 +58,7 @@ public class ContactHelper {
                         public void run() {
                             afterSaveCallback.run();
                         }
-                    }, 1000);
+                    }, 2000);
                 }
             }
         } catch (Exception e) {
